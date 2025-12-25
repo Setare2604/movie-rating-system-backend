@@ -2,5 +2,5 @@ __pycache__/
 *.pyc
 .env
 .venv/
-alembic/
+alembic/__pycache__/
 .poetry/
