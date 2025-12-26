@@ -65,3 +65,45 @@ def create_movie(db: Session, title: str, director_id: int, genre_ids: list[int]
     db.commit()
     db.refresh(movie)
     return movie
+
+def get_movie_detail(db: Session, movie_id: int):
+    movie = (
+        db.query(Movie)
+        .filter(Movie.id == movie_id)
+        .first()
+    )
+    if not movie:
+        return None
+
+    director_name = (
+        db.query(Director.name)
+        .join(Movie, Movie.director_id == Director.id)
+        .filter(Movie.id == movie_id)
+        .scalar()
+    )
+
+    genres = (
+        db.query(Genre.name)
+        .join(Genre.movies)
+        .filter(Movie.id == movie_id)
+        .all()
+    )
+
+    ratings = (
+        db.query(MovieRating.rating)
+        .filter(MovieRating.movie_id == movie_id)
+        .all()
+    )
+
+    avg_rating = db.query(func.avg(MovieRating.rating)).filter(MovieRating.movie_id == movie_id).scalar()
+    cnt = db.query(func.count(MovieRating.id)).filter(MovieRating.movie_id == movie_id).scalar()
+
+    return {
+        "id": movie.id,
+        "title": movie.title,
+        "director_name": director_name,
+        "genres": [g[0] for g in genres],
+        "ratings": [float(r[0]) for r in ratings],
+        "average_rating": float(avg_rating) if avg_rating is not None else None,
+        "ratings_count": int(cnt or 0),
+    }

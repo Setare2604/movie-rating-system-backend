@@ -25,3 +25,15 @@ class MovieCreatedOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class MovieDetailOut(BaseModel):
+    id: int
+    title: str
+    director_name: str
+    genres: List[str]
+    ratings: List[float]
+    average_rating: Optional[float] = None
+    ratings_count: int
+
+    class Config:
+        from_attributes = True
