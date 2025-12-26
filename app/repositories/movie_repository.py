@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+from fastapi import HTTPException
 from app.models.movie import Movie
 from app.models.director import Director
 from app.models.genre import Genre
@@ -45,3 +46,22 @@ def get_movies_with_stats(db: Session):
         )
 
     return result
+
+def create_movie(db: Session, title: str, director_id: int, genre_ids: list[int]) -> Movie:
+    director = db.query(Director).filter(Director.id == director_id).first()
+    if not director:
+        raise HTTPException(status_code=404, detail="Director not found")
+
+    genres = []
+    if genre_ids:
+        genres = db.query(Genre).filter(Genre.id.in_(genre_ids)).all()
+        if len(genres) != len(set(genre_ids)):
+            raise HTTPException(status_code=404, detail="One or more genres not found")
+
+    movie = Movie(title=title, director_id=director_id)
+    movie.genres = genres
+
+    db.add(movie)
+    db.commit()
+    db.refresh(movie)
+    return movie
