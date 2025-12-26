@@ -6,12 +6,15 @@ from app.db.database import get_db
 
 from app.controller.movie_controller import router as movie_router
 from app.controller.rating_controller import router as rating_router
+from app.controller.director_controller import router as director_router
+from app.controller.genre_controller import router as genre_router
 
 app = FastAPI(title="Movie Rating System API")
 
 app.include_router(movie_router)
 app.include_router(rating_router)
-
+app.include_router(director_router)
+app.include_router(genre_router)
 
 @app.get("/")
 def root():
