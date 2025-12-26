@@ -11,10 +11,11 @@ from app.controller.genre_controller import router as genre_router
 
 app = FastAPI(title="Movie Rating System API")
 
-app.include_router(movie_router)
-app.include_router(rating_router)
-app.include_router(director_router)
-app.include_router(genre_router)
+API_PREFIX = "/api/v1"
+app.include_router(movie_router, prefix=API_PREFIX)
+app.include_router(rating_router, prefix=API_PREFIX)
+app.include_router(director_router, prefix=API_PREFIX)
+app.include_router(genre_router, prefix=API_PREFIX)
 
 @app.get("/")
 def root():
